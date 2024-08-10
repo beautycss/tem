@@ -20,7 +20,7 @@ class TemField extends Field
     {
 
         $this->script = <<< EOF
-window.DemoTem = new BeautycssTEM('{$this->getElementClassSelector()}')
+window.DemoTem = new BeautycssTEM('{$this->getElementClassSelector()}');
 EOF;
         return parent::render();
     }
