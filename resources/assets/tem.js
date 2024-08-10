@@ -1,10 +1,11 @@
 (function () {
     // 上传地址
-    const UploadHost = '/admin/upload_file';
+    const UploadHost = '/admin/tem-upload';
 
     function TEM(warp) {
         this.warp = $(warp);
         this.attrs = {};
+        this.oldTem = [];
         this.commonStock = 0; // 统一库存
         this.commonPrice = 0; // 统一价格
         this.init();
@@ -99,16 +100,16 @@
             _this.processTem()
         });
 
-        // TEM图片上传
+        // TEM文件上传
         _this.warp.find('.tem_edit_warp tbody').on('click', '.Js_tem_upload', function() {
             _this.upload($(this))
         });
 
-        // 清空TEM图片
-        _this.warp.find('.tem_edit_warp tbody').on('click','.Js_tem_del_pic', function() {
+        // 清空TEM文件
+        _this.warp.find('.tem_edit_warp tbody').on('click','.Js_tem_del_file', function() {
             let td = $(this).parent();
             td.find('input').val('');
-            td.find('.Js_tem_upload').css('background-image','none');
+            // td.find('.Js_tem_upload').css('background-image','none');
             _this.processTem()
         });
 
@@ -150,6 +151,7 @@
                 // 生成具体的TEM配置表单
                 _this.attrs = old_val.attrs;
                 _this.TEMForm(old_val.tem);
+                _this.oldTem = old_val.tem;
             }
         } else {
             _this.processTem()
@@ -181,7 +183,7 @@
 
         if (JSON.stringify(_this.attrs) !== JSON.stringify(attr)) {
             _this.attrs = attr;
-            _this.TEMForm()
+            _this.TEMForm(_this.oldTem)
         }
     };
 
@@ -198,9 +200,9 @@
             attr_names.forEach(function (attr_name) {
                 thead_html += '<th>' + attr_name + '</th>'
             });
-            thead_html += '<th style="width: 100px">图片</th>';
-            thead_html += '<th style="width: 100px">价格 <input value="' + _this.commonPrice + '" type="text" style="width: 50px" class="Js_price"></th>';
-            thead_html += '<th style="width: 100px">库存 <input value="' + _this.commonStock + '" type="text" style="width: 50px" class="Js_stock"></th>';
+            thead_html += '<th style="width: 400px">文件</th>';
+            // thead_html += '<th style="width: 100px">价格 <input value="' + _this.commonPrice + '" type="text" style="width: 50px" class="Js_price"></th>';
+            // thead_html += '<th style="width: 100px">库存 <input value="' + _this.commonStock + '" type="text" style="width: 50px" class="Js_stock"></th>';
             thead_html += '</tr>';
             _this.warp.find('.tem_edit_warp thead').html(thead_html);
 
@@ -225,9 +227,9 @@
                     let attr_name = attr_names[index];
                     tbody_html += '<td data-field="' + attr_name + '">' + attr_val + '</td>';
                 });
-                tbody_html += '<td data-field="pic"><input value="" type="hidden" class="form-control"><span class="Js_tem_upload">+</span><span class="Js_tem_del_pic">清空</span></td>';
-                tbody_html += '<td data-field="price"><input value="' + _this.commonPrice + '" type="text" class="form-control"></td>';
-                tbody_html += '<td data-field="stock"><input value="' + _this.commonStock + '" type="text" class="form-control"></td>';
+                tbody_html += '<td data-field="file"><input value="" type="text" readonly class="form-control" style="width:300px;display:inline-block"><span class="Js_tem_upload" style="vertical-align: middle">+</span><span class="Js_tem_del_file">清空</span></td>';
+                // tbody_html += '<td data-field="price"><input value="' + _this.commonPrice + '" type="text" class="form-control"></td>';
+                // tbody_html += '<td data-field="stock"><input value="' + _this.commonStock + '" type="text" class="form-control"></td>';
                 tbody_html += '</tr>'
             });
             _this.warp.find('.tem_edit_warp tbody').html(tbody_html);
@@ -235,17 +237,20 @@
             if(default_tem) {
                 // 填充数据
                 default_tem.forEach(function(item_tem, index) {
-                    let tr = _this.warp.find('.tem_edit_warp tbody tr').eq(index);
-                    Object.keys(item_tem).forEach(function(field) {
+                    let foundTd = _this.warp.find('.tem_edit_warp tbody').find('td[data-field="Size"]:contains("'+item_tem.Size+'")');
+                    if(foundTd) {
+                        let tr = foundTd.parent('tr');
+                        Object.keys(item_tem).forEach(function(field) {
                         let input = tr.find('td[data-field="'+field+'"] input');
                         if(input.length) {
                             input.val(item_tem[field]);
-                            let tem_upload = tr.find('td[data-field="'+field+'"] .Js_tem_upload');
-                            if(tem_upload.length) {
-                                tem_upload.css('background-image','url('+item_tem[field]+')');
+                            // let tem_upload = tr.find('td[data-field="'+field+'"] .Js_tem_upload');
+                            // if(tem_upload.length) {
+                                //     tem_upload.css('background-image','url('+item_tem[field]+')');
+                                // }
                             }
-                        }
-                    })
+                        })
+                    }
                 });
             }
         }
@@ -281,13 +286,13 @@
         _this.warp.find('.Js_tem_input').val(JSON.stringify(tem_json));
     };
 
-    // 图片上传
+    // 文件上传
     TEM.prototype.upload = function(obj) {
         let _this = this;
         // 创建input[type="file"]元素
         let file_input = document.createElement('input');
-        file_input.setAttribute('type','file');
-        file_input.setAttribute('accept','image/x-png,image/jpeg');
+        file_input.setAttribute('type', 'file');
+        file_input.setAttribute('accept','.ai, .psd, .pdf');
 
         // 模拟点击 选择文件
         file_input.click();
@@ -308,7 +313,7 @@
                 },
                 processData: false, //告诉jQuery不要去处理发送的数据
                 success: function (res) {
-                    obj.css('background-image','url('+res.url+')');
+                    // obj.css('background-image','url('+res.url+')');
                     obj.parent().find('input').val(res.url);
                     _this.processTem()
                 }
