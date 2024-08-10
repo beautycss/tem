@@ -1,0 +1,54 @@
+.tem_warp{
+    padding: 10px 10px;
+    border: 1px solid #d2d6de;
+}
+.tem_warp .tem_attr_key_val{
+    margin-top: 10px;
+}
+.tem_warp .tem_attr_val_warp{
+    clear: both;
+}
+.tem_warp .tem_attr_val_warp:after{
+    content: ' ';
+    display: block;
+    clear: both;
+}
+.tem_warp .tem_attr_val_item{
+    display: inline-block;
+    float: left;
+}
+
+.tem_warp .tem_attr_val_item .tem_attr_val_input{
+    margin-left: 10px;
+    margin-bottom: 5px;
+    width: 100px;
+    float: left;
+}
+
+.tem_warp .tem_attr_val_item .btn{
+    float: left;
+    border-radius: 0 !important;
+}
+
+.tem_warp .tem_edit_warp .Js_tem_upload{
+    display: inline-block;
+    height: 40px;
+    width: 40px;
+    font-size: 32px;
+    line-height: 40px;
+    border: 1px solid #d2d6de;
+    text-align: center;
+    box-sizing: border-box;
+    cursor: pointer;
+    user-select: none;
+    background-size: 100%;
+    background-repeat:no-repeat;
+}
+
+.tem_warp .tem_edit_warp  .Js_tem_del_pic{
+    display: inline-block;
+    margin-left: 5px;
+    color: #ff0000;
+    text-decoration: underline;
+    cursor: pointer;
+}
